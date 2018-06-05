@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>AslApplication</artifactId>
+	<groupId>com.bbh.asl.application</groupId>
+	<packaging>ear</packaging>
+	<version>1.4.0.0</version>
+	<name>ASL Enterprise Application</name>
+	<parent>
+		<groupId>com.bbh.asl</groupId>
+		<artifactId>ASLProjects</artifactId>
+		<version>1.0.0</version>
+<!-- 		<relativePath>../ASLProjects/pom.xml</relativePath>
+ -->
+	</parent>
+
+	<properties>
+		<uiContextRoot>AslWeb</uiContextRoot>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>bbh.public</id>
+			<name>BBH - PUBLIC REPOSITORY</name>
+			<url>http://tools.bbh.com/nexus/content/groups/public/</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>bbh-releases</id>
+			<name>BBH Internal Releases</name>
+			<url>http://tools.bbh.com/nexus/content/repositories/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>bbh-snapshots</id>
+			<name>BBH Internal Snapshots</name>
+			<url>http://tools.bbh.com/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<dependencies>
+<!-- 		<dependency>
+			<groupId>com.bbh.asl.dto</groupId>
+			<artifactId>AslDTO</artifactId>
+			<version>1.1.0</version>
+			<type>jar</type>
+		</dependency> -->
+<!-- 				<dependency>
+			<groupId>com.bbh.asl.service</groupId>
+			<artifactId>AslServiceApplication</artifactId>
+			<version>1.3.0</version>
+			<type>jar</type>
+		</dependency> -->
+		<dependency>
+			<groupId>com.bbh.asl.web</groupId>
+			<artifactId>AslWebApplication</artifactId>
+			<version>1.2.0</version>
+			<type>war</type>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-ear-plugin</artifactId>
+				<version>2.8</version>
+				<configuration>
+					<version>${javaee.version}</version>
+					<displayName>${project.build.finalName}</displayName>
+					<defaultLibBundleDir>lib</defaultLibBundleDir>
+					<modules>
+						<webModule>
+							<groupId>com.bbh.asl.web</groupId>
+							<artifactId>AslWebApplication</artifactId>
+							<uri>AslWeb.war</uri>
+							<bundleFileName>AslWeb.war</bundleFileName>
+							<contextRoot>/ASLWeb</contextRoot>
+						</webModule>
+					</modules>
+					<archive>
+						<manifestEntries>
+							<Implementation-Version>${project.build.finalName}-${project.version}</Implementation-Version>
+							<Build-Info>${buildInfo}</Build-Info>
+						</manifestEntries>
+						<manifest>
+							<addClasspath>true</addClasspath>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<profiles>
+		<profile>
+			<id>ear_qc</id>
+			<properties>
+				<uiContextRoot>AslWeb</uiContextRoot>
+			</properties>
+			<activation>
+				<property>
+					<name>profile.qc</name>
+				</property>
+			</activation>
+		</profile>
+		<profile>
+			<id>ear_ce</id>
+			<properties>
+				<uiContextRoot>AslWeb</uiContextRoot>
+			</properties>
+			<activation>
+				<property>
+					<name>profile.ce</name>
+				</property>
+			</activation>
+		</profile>
+		<profile>
+			<id>ear_prod</id>
+			<properties>
+				<uiContextRoot>AslWeb</uiContextRoot>
+			</properties>
+			<activation>
+				<property>
+					<name>profile.prod</name>
+				</property>
+			</activation>
+		</profile>
+
+		<profile>
+			<id>deploy-was-tomek</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.orctom.mojo</groupId>
+						<artifactId>was-maven-plugin</artifactId>
+						<version>1.0.3</version>
+						<executions>
+							<execution>
+								<id>deploy</id>
+								<phase>install</phase>
+								<goals>
+									<goal>deploy</goal>
+								</goals>
+								<configuration>
+									<wasHome>${env.WAS_HOME}</wasHome>
+									<applicationName>${project.build.finalName}</applicationName>
+									<port>9082</port>
+									<server>server1</server>
+									<node>RA84D6Node03</node>
+									<virtualHost>default_host</virtualHost>
+									<verbose>true</verbose>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
